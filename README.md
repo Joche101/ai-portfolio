@@ -1,106 +1,81 @@
-# AI-Native Product Operator — Portfolio
+# AI Governance Portfolio — Compliance Framework
 
-**John Bianchina** · [aithatbooks.co.za](https://aithatbooks.co.za) · john@aithatbooks.co.za · +27 78 914 0260
+**John Bianchina** · [pursuitreadiness.com](https://pursuitreadiness.com) · john@pursuitreadiness.com · [LinkedIn](https://www.linkedin.com/in/john-bianchina-88965078/)
 
-> *"We're hiring for someone who treats AI as a daily working partner, who is restless about how things are done, and who is going to make us better every week by finding smarter ways to do the work."* — Ringier CDE
+A POPIA-compliant data protection layer for multi-industry AI systems. This repo contains the
+governance modules, the audit trail, and one production bridge component.
 
-This repo is the evidence. Not a CV. A working system.
+Not a demo. These modules run under every system I deploy.
 
 ---
 
-## What's Here
+## What's in this repo
 
-This repository contains production AI infrastructure that runs 24/7 on a VPS — a multi-agent AI operating system that handles real conversations, manages compliance, and orchestrates autonomous workflows across industries.
+### `/compliance`
 
-### Systems (`/systems`)
+**`audit_trail.py`** — SHA-256 hash-chained event logging with tamper-evident verification. Every
+PII operation is recorded with a UUID, timestamp, actor, resource, action and trace ID. Records are
+chained, so altering any past entry breaks verification from that point forward. Retention: 2 years
+active, 6 years archive.
 
-**`bridge.py`** — 598-line WhatsApp-to-AI bridge that connects real users to an AI concierge system. It handles:
-- Persona routing (detects known users vs. new prospects)
-- Multi-platform message relay (WhatsApp, webhook, API)
-- Lead capture with structured qualification
-- Campaign tracking with booking-stage progression
-- Legal pre-filtering with compliance gates
-- Session locking for atomic operations
+**`consent.py`** — scope-based consent registry with capture, persistence and runtime enforcement.
+Every PII operation checks consent before execution rather than trusting that a check happened
+upstream.
 
-This isn't a demo. It's running in production with 40+ hours uptime, handling conversations across legal, dental, and real estate verticals.
+**`hitl.py`** — human-in-the-loop approval gates for sensitive operations: data access, deletion,
+correction, escalation, legal review. The gates are mandatory and cannot be bypassed
+programmatically. This is the part that matters most in a regulated industry — the system can
+refuse an action, but it can never take a sensitive one on its own.
 
-### Compliance Framework (`/compliance`)
+### `/systems`
 
-POPIA-compliant data protection layer built for multi-industry AI systems:
+**`bridge.py`** — the WhatsApp-to-AI bridge component: persona routing (known user vs. new
+prospect), multi-platform message relay, structured lead capture, and session locking for atomic
+operations.
 
-- **`audit_trail.py`** — SHA-256 hash-chained event logging with tamper-evident verification. Every PII operation is recorded with UUID, timestamp, actor, resource, action, and trace ID. 2-year active / 6-year archive retention.
-- **`consent.py`** — Scope-based consent registry with capture, persistence, and runtime enforcement. All PII operations check consent before execution.
-- **`hitl.py`** — Human-in-the-loop approval gates for sensitive operations (data access, deletion, correction, escalation, legal review). Mandatory gates that cannot be bypassed programmatically.
+---
 
-### Architecture
+## Why these three modules, in this order
 
-```
-                    ┌──────────────────────────────┐
-                    │     WhatsApp / Web / API      │
-                    └──────────────┬───────────────┘
-                                   │
-                    ┌──────────────▼───────────────┐
-                    │     PHP Proxy (cPanel)        │
-                    │  → Persona routing            │
-                    │  → Legal pre-filter            │
-                    │  → Campaign tracking           │
-                    └──────────────┬───────────────┘
-                                   │
-           ┌───────────────────────┼───────────────────────┐
-           │                       │                       │
-    ┌──────▼──────┐        ┌──────▼──────┐        ┌──────▼──────┐
-    │   Hermes    │        │  Paperclip  │        │ Agent Zero  │
-    │  Concierge  │◄──────►│ Orchestrator│◄──────►│ Autonomous  │
-    │  (Gateway)  │        │ (Postgres)  │        │   (FAISS)   │
-    └──────┬──────┘        └──────┬──────┘        └─────────────┘
-           │                       │
-    ┌──────▼───────────────────────▼──────┐
-    │         Compliance Layer             │
-    │  audit_trail │ consent │ hitl       │
-    └──────────────────────────────────────┘
-```
+A check that depends on someone remembering to run it is not a control. Each module removes a
+different class of failure:
 
-## Why This Matters for CDE
-
-| CDE Requirement | Evidence in This Repo |
+| Module | The failure it prevents |
 |---|---|
-| **AI fluency in practice** | Multi-agent orchestration with model switching, tool routing, and autonomous workflows |
-| **Bias toward automation** | Compliance is automated, lead capture is automated, persona routing is automated — no human does repetitive work |
-| **Operational discipline** | Production system with audit trails, consent tracking, and HITL gates — designed for accountability |
-| **Customer instinct** | Persona routing understands who's talking and adapts; lead capture qualifies without friction |
-| **Technical literacy** | Python, Node.js, Docker, Postgres, API integration, bash scripting — all evidenced in working code |
-| **Comfort with ambiguity** | This system wasn't built from a spec — it evolved through iteration, like CDE's growing product |
-| **Strong written communication** | Code is documented, architecture is explained, compliance is traceable |
+| `audit_trail` | "We think it processed that data, but we can't prove what happened." |
+| `consent` | "The data was collected lawfully, so using it here must be fine." |
+| `hitl` | "The automation was correct, but nobody authorised it." |
 
-## Live Demos
-
-The portfolio site at [aithatbooks.co.za](https://aithatbooks.co.za) has 4 interactive AI system demos:
-
-- **Hermann Concierge** — AI guest intake for safari lodges (live in production)
-- **DentaLink AI** — Dental enquiry triage with safety checks
-- **CV Parsing Engine** — Structured candidate extraction
-- **Business AI Framework** — Operational workflow automation across 6 industries
-
-## What AI Changed for Me in the Last 12 Months
-
-I stopped writing code to solve problems and started building systems that solve problems autonomously.
-
-The bridge.py file in this repo used to be a manual workflow — I'd write a script, test it, deploy it, monitor it. Now the system monitors itself. When something breaks, the watchdog catches it before I notice. When a new client comes in, the persona router handles intake without me touching anything.
-
-What I want to change next: close the loop entirely. Right now there's still a human review gate (by design, for compliance). The next step is building the feedback system where the AI learns from those human decisions and reduces the need for them over time — while maintaining the audit trail that proves it's safe.
-
-## Something I Built Recently That I'm Proud Of
-
-This repo. Not the code — the system around the code.
-
-The compliance framework (audit, consent, HITL) was built in 48 hours because a dental client needed POPIA guarantees before they'd deploy. Rather than building a checklist, I built a framework that:
-
-1. Made compliance automatic (not a manual process someone would skip)
-2. Made decisions auditable (so the client could prove compliance to regulators)
-3. Made human oversight mandatory but lightweight (so it didn't become a bottleneck)
-
-That framework now underpins every AI system I deploy — legal, dental, real estate. It wasn't in the plan. It emerged because a client had a real problem, and the solution turned out to be reusable infrastructure. That's how I think about product: build the thing that makes the next thing faster.
+Hash-chaining rather than plain logging is deliberate. An editable log proves nothing when the
+question is whether the log itself is trustworthy.
 
 ---
 
-**Let's talk.** john@aithatbooks.co.za · [aithatbooks.co.za](https://aithatbooks.co.za) · [LinkedIn](https://www.linkedin.com/in/john-bianchina-88965078/)
+## Context
+
+I built the compliance framework in 48 hours because a dental client needed POPIA guarantees before
+they would deploy. Rather than write a checklist, I built a framework that made compliance
+automatic, made decisions auditable enough to show a regulator, and kept human oversight mandatory
+without turning it into a bottleneck.
+
+It now underpins every AI system I deploy across legal, dental, real estate and healthcare work.
+It was not in the plan. It emerged from a client's real problem, and the solution turned out to be
+reusable infrastructure.
+
+---
+
+## Stack
+
+Python · SHA-256 hash chaining · consent registries · webhook and API integration · SQLite /
+Postgres · bash scripting · GitHub Actions (CI configured in `.github/workflows/python-app.yml`)
+
+---
+
+## What's coming
+
+The next step is closing the loop: the AI learning from human decisions at the approval gate so
+the gate is needed less often over time — while keeping the audit trail that proves it stayed safe.
+
+---
+
+**Let's talk.** john@pursuitreadiness.com · [pursuitreadiness.com](https://pursuitreadiness.com) · [LinkedIn](https://www.linkedin.com/in/john-bianchina-88965078/)
